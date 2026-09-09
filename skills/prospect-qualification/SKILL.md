@@ -1,6 +1,6 @@
 ---
 name: prospect-qualification
-description: Final manual fit-check for a premium cold-email agency. Given ONE company website (or a CSV of many), visits the site + does external registry/LinkedIn lookups and decides SELECT / SKIP / MANUAL CHECK — the one question is "can this company afford a premium outbound retainer and is there outbound work to do for them?". ICP/industry/geo/size filtering is assumed already done at list-build time. Enforces 9 locked hard disqualifiers (external parent/group/fund that puts the buyer out of reach — a founders' own holding shell does NOT count; free demo/consultation, no B2B motion, staffing shop, low-ticket, micro/consumer customers, government-only, competitor selling outbound/lead-gen). Uses parallel MCP / exa MCP for the parent-company check. Triggers on "qualify this company", "is this a good fit", "check this website", "run the fit check", "SELECT or SKIP".
+description: Final manual fit-check for a premium cold-email agency. Given ONE company website (or a CSV of many), visits the site + does external registry/LinkedIn lookups and decides SELECT / SKIP / MANUAL CHECK — the one question is "can this company afford a premium outbound retainer and is there outbound work to do for them?". ICP/industry/geo/size filtering is assumed already done at list-build time. Enforces 10 locked hard disqualifiers (external parent/group/fund that puts the buyer out of reach — a founders' own holding shell does NOT count; free demo/consultation, no B2B motion, staffing shop, low-ticket, micro/consumer customers, government-only, competitor selling outbound/lead-gen, geospatial/GIS/mapping/surveying). Uses parallel MCP / exa MCP for the parent-company check. Triggers on "qualify this company", "is this a good fit", "check this website", "run the fit check", "SELECT or SKIP".
 user_invocable: true
 ---
 
@@ -44,6 +44,7 @@ The full rationale and signal reference is in `methodology.md` next to this file
 | **D7** | **Customers are purely micro / solopreneur / consumer** (B2C, freelancers, 1–5 person shops: local café, plumber, single salon). **Mid-market customers are fine.** |
 | **D8** | **Customer base is EXCLUSIVELY (or all but exclusively) government / public sector** — the company sells only to ministries, state agencies, public hospitals, universities, state-owned enterprises, municipalities, defence/law-enforcement/intelligence, and has essentially no private commercial customers. Reason: a small outbound agency cannot prospect government buyers (tenders, 6–18 mo cycles). **Government being the *majority* of the client base is NOT a skip** — if they also genuinely serve private enterprises (any private companies, corporate/works canteens, private industry, etc.), D8 does NOT fire; you run outbound at the private-sector side. Case studies featuring government bodies are not enough on their own — check whether private companies are also served. **Check the real client base, not the marketing site:** for CZ/SK companies the public-contracts registry (smlouvy.gov.cz, hlidacstatu.cz) lists every state contract by supplier ID — search the IČO. Use it to see how much is government; then check the site/references for private clients before concluding. |
 | **D9** | **Competitor — the company itself sells outbound / cold email / lead generation / appointment-setting / SDR-as-a-service.** Cold-email agencies, lead-gen agencies, demand-gen agencies, appointment-setting firms, SDR / BDR outsourcing, sales-development agencies, and BPO / call centres whose service menu includes "outbound campaigns" or "lead generation". They run outbound in-house and will never buy an outbound retainer — and they're a competitor. Check the services / what-we-do page for words like *outbound, lead generation, appointment setting, generování leadů, obchodní schůzky, outboundové kampaně, sales development*. |
+| **D10** | **Core offering is geospatial / GIS / mapping / surveying — outbound isn't a viable channel for it.** SKIP if the company's main business is geographic/spatial: aerial or satellite imaging, orthophoto, photogrammetry, LiDAR, geodesy, land surveying, cadastre / land-registry work, cartography, GIS software / platforms / data, mobile mapping, 3D terrain or city models, urban-planning (územní plán) documentation, or spatial analytics as the headline product. Reason: the buyer universe is tiny, heavily municipal / regional / public-infrastructure, and **tender-driven** (6–18 mo RFP cycles), the purchase is infrequent and technical (surveyors + GIS staff + procurement, not one reachable growth buyer), and there is no repeatable "outreach → demo → deal" motion. This holds **even if some clients are private** and even if the company is independent and high-ticket — D10 is about the *service category*, not the client mix (that's D8). A freemium GIS web-portal alongside the surveying business does not rescue it. *(TopGis calibration — flipped SELECT → SKIP. Also flips the earlier Lutra Consulting and ARCDATA PRAHA SELECTs.)* |
 
 ### SELECT — must clear ALL of these
 
@@ -57,7 +58,9 @@ The full rationale and signal reference is in `methodology.md` next to this file
 
 8. **Not a competitor** — does not itself sell outbound / cold email / lead-gen / appointment-setting / SDR-as-a-service (D9).
 
-Clears all 8 and trips none of D1–D9 → **SELECT**.
+9. **Not a geospatial / GIS / mapping / surveying company** (D10) — the service category has a tiny, mostly-public, tender-driven buyer universe that cold outbound can't address.
+
+Clears all 9 and trips none of D1–D10 → **SELECT**.
 
 ### Do NOT filter on
 
@@ -117,7 +120,7 @@ The website almost never names its owner. Run a research pass:
 
 ### Step 3 — Apply the rules
 
-Walk D1–D9, then the 8 SELECT criteria. Decide.
+Walk D1–D10, then the 9 SELECT criteria. Decide.
 
 **Exhaust the research before you reach for MANUAL CHECK.** Use exa MCP (parallel MCP when it has credit), LinkedIn, Crunchbase, press, and the local registry — and your own knowledge of the company / its acquirers / its market. Chase the parent-company question up every level. Read the *whole* services page, not one line. MANUAL CHECK is a last resort for a genuine either/or that no public source settles — not a shortcut when a source exists but is inconvenient to find. Most "residuals" can be resolved with one more registry lookup (shareholder list, share pledges, beneficial owner) — do it.
 
@@ -169,3 +172,4 @@ Rules for the output:
 - **Prop-trading / own-capital / no-customers businesses are a clean SKIP (D4)** even when rich.
 - **Staffing / body-leasing as the *core* business is a clean SKIP (D5);** a project company that also offers staff augmentation is not.
 - **D8 fires only on a government-ONLY client base.** Government being the majority is fine as long as private enterprises are also genuinely served (corporate/works canteens, private industry, private company refs) — run outbound at the private side. Don't skip off government-heavy case studies alone; check for private clients first. (ANETE: heavy state-hospital + Ministry of Defence use, but also private works canteens + ŽĎAS + KNL Catering → D8 clears; it skipped on D1 instead.)
+- **D10 — geospatial / GIS / mapping / surveying is a clean SKIP regardless of ownership, ticket size, or client mix.** TopGis (topgis.cz — aerial photography, orthophoto, mobile mapping, thermal imaging, GisOnline portal, 3D územní plán, WMS) was flipped SELECT → SKIP: the whole category has a tiny, municipal/regional/public-infrastructure, tender-driven buyer universe and no repeatable outreach→demo→deal motion. Also flips the earlier **Lutra Consulting** (custom QGIS engineering) and **ARCDATA PRAHA** (national Esri/ArcGIS distributor + GIS consulting) SELECTs. Watch for: *geodézie, mapování, ortofoto, letecké/družicové snímkování, fotogrammetrie, LiDAR, kataster, GIS, územní plán, mobilní mapování, 3D model, prostorová analytika*.
