@@ -1,6 +1,6 @@
 ---
 name: prospect-qualification
-description: Final manual fit-check for a premium cold-email agency. Given ONE company website (or a CSV of many), visits the site + does external registry/LinkedIn lookups and decides SELECT / SKIP / MANUAL CHECK — the one question is "can this company afford a premium outbound retainer and is there outbound work to do for them?". ICP/industry/geo/size filtering is assumed already done at list-build time. Enforces 9 locked hard disqualifiers (parent company, free demo/consultation, no B2B motion, staffing shop, low-ticket, micro/consumer customers, government-only, competitor selling outbound/lead-gen). Uses parallel MCP / exa MCP for the parent-company check. Triggers on "qualify this company", "is this a good fit", "check this website", "run the fit check", "SELECT or SKIP".
+description: Final manual fit-check for a premium cold-email agency. Given ONE company website (or a CSV of many), visits the site + does external registry/LinkedIn lookups and decides SELECT / SKIP / MANUAL CHECK — the one question is "can this company afford a premium outbound retainer and is there outbound work to do for them?". ICP/industry/geo/size filtering is assumed already done at list-build time. Enforces 9 locked hard disqualifiers (external parent/group/fund that puts the buyer out of reach — a founders' own holding shell does NOT count; free demo/consultation, no B2B motion, staffing shop, low-ticket, micro/consumer customers, government-only, competitor selling outbound/lead-gen). Uses parallel MCP / exa MCP for the parent-company check. Triggers on "qualify this company", "is this a good fit", "check this website", "run the fit check", "SELECT or SKIP".
 user_invocable: true
 ---
 
@@ -10,9 +10,15 @@ user_invocable: true
 
 You are the **final human-style check** on a lead list that has *already* been filtered for ICP, industry, geography, employee size, and keywords. Do **not** re-filter on any of those.
 
-Answer exactly one question per company:
+Answer exactly one question per company. **In practice this reduces to three checks (session-3 framing):**
 
-> **Can this company afford a premium outbound retainer (~$1,600/mo), would it make sense for them to buy one, and is there actual outbound work to do for them?**
+1. **Can we reach the decision-maker?** No real parent / group / fund above them (a founders' own holding shell is fine — see D1), AND a findable decision-maker with a phone / LinkedIn.
+2. **Do their case studies / client list show mid-ticket AND high-ticket clients?** Real businesses, not a client base that is *entirely* micro / solopreneur / consumer (D7), and not genuinely commodity work.
+3. **Do they trip any hard disqualifier?** Free demo/trial/plan (D3), competitor selling outbound (D9), core staffing/body-shop (D5), government-only client base (D8), no B2B motion (D4).
+
+Clears 1 + 2 and trips none in 3 → **SELECT**.
+
+> **NEVER a reason to SKIP:** the company's own employee count, headcount, revenue size, "they look too small to afford it", funding stage, industry, or geography. Those are filtered at list-build time. Affordability is judged **only** by whether *their* offering is high/mid-ticket (shown by client calibre and the absence of cheap self-serve pricing) — never by how big or how profitable the company itself is.
 
 Output: **SELECT** / **SKIP** / **MANUAL CHECK**, every signal citing where it was found, ending in a one-line verdict.
 
@@ -29,20 +35,20 @@ The full rationale and signal reference is in `methodology.md` next to this file
 
 | # | Rule |
 |---|------|
-| **D1** | **Has a parent / holding company above it.** Owned by another company — operating parent, larger group, PE/VC fund holding equity, **or even the owner's personal / tax holding company** (e.g. "X Holding ApS/s.r.o./Ltd", an MBO vehicle s.r.o. that holds 100% of the shares). No exceptions. |
+| **D1** | **A real parent above it puts the buying decision out of reach.** The question D1 actually answers: *is the person who can say "yes" to a retainer reachable, or does the decision sit inside a group / fund above them?* **SKIP** if owned by another **operating company**, a **larger group** (group branding, "part of the X Group" / "a X company", shared group management, several operating companies under one roof), or a **PE / VC / investment fund** holding a controlling or significant stake — you can't sell to the target directly. **NOT D1 — still SELECTable (the exception):** a **pure holding shell owned by the target's own founders / operators as individuals** — a personal / family / tax holdco or an MBO vehicle (e.g. "[Founder] Holding / Ventures / Invest s.r.o.", "X Holding ApS") whose only real asset is this company (± the same founders' other small ventures), no operations of its own, registered purpose "manage own assets / real estate", and **no group branding on the website**. Same people, same reachable decision-maker → treat as independent. **Test: trace the holdco up one level** — reach the target's own founders as individuals → not D1; reach a different company, a fund, or outside people → D1 → SKIP. Confirm "reachable": the same owners are the operating company's directors and are named / on LinkedIn / on the contact page, with no group gatekeeping. |
 | **D2** | *(not a disqualifier — the opposite)* Company **owns its own** subsidiaries / smaller companies beneath it → **fine**. Being a parent is fine; being a child is not. |
-| **D3** | **Free demo / free trial / free consultation.** Free trial, freemium, "sign up free", "no credit card required", self-serve signup; OR a prominent "Free Demo / Free Trial / Free Audit" CTA; OR a free consultation / strategy call / audit / workshop as the hook ("konzultácia zdarma", "nezáväzná konzultácia"). |
+| **D3** | **Something on the site is offered explicitly FREE.** SKIP if the site offers a **free** demo, **free** trial, **free** consultation / strategy call / audit / workshop, a **free plan / freemium**, "start free", "sign up free", "no credit card required", or self-serve signup. **NOT D3 (fine — keep):** a plain form to fill out for a consultation, a demo, or contact when it is *not* advertised as free — "Book a demo", "Request a demo", "Book a consultation", "Contact us", "Get a quote", "Talk to sales" are all normal B2B sales entry points. **The test:** is the word **free** (zdarma / gratis / bezplatná / "no cost" / "no obligation, free") attached to the offer? Yes → SKIP. Just a contact/demo/consultation form with no "free" → fine. |
 | **D4** | **No B2B sales motion.** Sells nothing to other businesses — prop-trading firm, fund trading own capital, pure holding co, internal-only — and the main CTA is "Join us" / careers. |
 | **D5** | **Core business is IT staffing / body-leasing / contractor resourcing** billed on day rates. *(A project company that also offers some staff augmentation on the side is NOT auto-skipped — judge the core: read the whole services page and weight by prominence. One "scale your team / dedicated experts / no recruitment hassle" call-out buried under consulting + product + training offerings does NOT trigger D5. It triggers D5 only when team-extension / staff-aug IS the headline pitch.)* |
-| **D6** | **Clearly low-ticket / self-serve.** Transparent low public pricing (tens–low-hundreds/mo), instant credit-card checkout, high-volume low-price model. |
+| **D6** | **Clearly low-ticket / self-serve.** Transparent low public pricing (tens–low-hundreds/mo), instant credit-card checkout, high-volume low-price model. **Judge D6 on THEIR offering — the pricing page, the checkout, the client calibre — NOT on the company's own revenue or headcount.** A small agency with €250k revenue that serves TON, Meopta, Janošík (real mid-market brands) with custom project work is NOT low-ticket. "Too small to afford our retainer" is never a valid SKIP reason (Studio 9 calibration). |
 | **D7** | **Customers are purely micro / solopreneur / consumer** (B2C, freelancers, 1–5 person shops: local café, plumber, single salon). **Mid-market customers are fine.** |
 | **D8** | **Customer base is EXCLUSIVELY (or all but exclusively) government / public sector** — the company sells only to ministries, state agencies, public hospitals, universities, state-owned enterprises, municipalities, defence/law-enforcement/intelligence, and has essentially no private commercial customers. Reason: a small outbound agency cannot prospect government buyers (tenders, 6–18 mo cycles). **Government being the *majority* of the client base is NOT a skip** — if they also genuinely serve private enterprises (any private companies, corporate/works canteens, private industry, etc.), D8 does NOT fire; you run outbound at the private-sector side. Case studies featuring government bodies are not enough on their own — check whether private companies are also served. **Check the real client base, not the marketing site:** for CZ/SK companies the public-contracts registry (smlouvy.gov.cz, hlidacstatu.cz) lists every state contract by supplier ID — search the IČO. Use it to see how much is government; then check the site/references for private clients before concluding. |
 | **D9** | **Competitor — the company itself sells outbound / cold email / lead generation / appointment-setting / SDR-as-a-service.** Cold-email agencies, lead-gen agencies, demand-gen agencies, appointment-setting firms, SDR / BDR outsourcing, sales-development agencies, and BPO / call centres whose service menu includes "outbound campaigns" or "lead generation". They run outbound in-house and will never buy an outbound retainer — and they're a competitor. Check the services / what-we-do page for words like *outbound, lead generation, appointment setting, generování leadů, obchodní schůzky, outboundové kampaně, sales development*. |
 
 ### SELECT — must clear ALL of these
 
-1. Independent — no parent / holding company above it (D1).
-2. No free demo / trial / consultation (D3).
+1. Independent *for selling purposes* — no operating parent, branded group, or PE/VC/investment fund above it. A holding shell owned by the target's own founders/operators (same reachable decision-maker) is fine (D1).
+2. Nothing offered explicitly free — no free demo / trial / plan / consultation / audit (D3). A plain "book a demo" / "book a consultation" / contact form that is *not* called free is fine.
 3. Real B2B sales motion — sells a service or product to other businesses (D4).
 4. Not low-ticket — custom-quoted, no cheap self-serve; mid-ticket or higher (D6).
 5. Customers are mid-market or larger — not purely micro/solopreneur/consumer (D7).
@@ -55,7 +61,7 @@ Clears all 8 and trips none of D1–D9 → **SELECT**.
 
 ### Do NOT filter on
 
-Company size / headcount · funding stage · industry / vertical · geography · "enterprise clients" (mid-market 50–500 employees with real revenue is fine — enterprise is a bonus, not a requirement) · the mere word "Enterprise" on the site (read what it actually refers to — "enterprise ERP we integrate with" ≠ "we sell to enterprises").
+Company size / headcount / **revenue size / "too small to afford it"** · funding stage · industry / vertical · geography · "enterprise clients" (mid-market 50–500 employees with real revenue is fine — enterprise is a bonus, not a requirement) · the mere word "Enterprise" on the site (read what it actually refers to — "enterprise ERP we integrate with" ≠ "we sell to enterprises") · a shrinking-revenue year · offshore / low-cost delivery staff. **The list is already size- and geo-filtered — never SKIP on any of these, and never let "small revenue" become an implied D6.**
 
 ### "Depends" categories — run through D1–D8 + the 7, do not auto-skip
 
@@ -99,10 +105,15 @@ The website almost never names its owner. Run a research pass:
    - **Product sub-sites / footers** ("X is developed by Y, a member of the Z group") often name the parent when the main About page doesn't
    - Press: `"<company>" acquired OR "becomes part of" OR "backed by"`
 4. Read the shareholder / "Jediný akcionár" / "Spoločníci" / "ownership" section:
-   - **A company (any kind) holds the shares → D1 → SKIP.** Includes a newly-formed s.r.o./ApS/Ltd whose only purpose is to hold this company (MBO / tax vehicle). Trace one level up if the immediate holder is itself a shell — but a corporate holder at level 1 is already a SKIP.
    - **Individuals hold the shares directly → not D1.** Independent.
+   - **A company holds the shares → do NOT stop; trace it one level up and identify what kind of holder it is:**
+     - **Pure holding shell owned by this company's own founders / operators as individuals** (personal / family / MBO / tax vehicle — no operations, no staff, registered purpose "manage own assets / real estate", only real asset is this company ± the same founders' other small ventures, and the website shows no group branding) → **NOT D1.** Same reachable decision-maker → independent, can SELECT.
+     - **Another operating company, or a real / branded group** ("part of the X Group", "a X company", group logo, group-level management, several operating companies) → **D1 → SKIP.** Decision sits above.
+     - **A PE / VC / investment fund** (SICAV, "investiční společnost", named PE/VC) holding a controlling or significant stake → **D1 → SKIP.**
+     - Immediate holder is itself a shell → keep tracing up; a non-founder corporate / group / fund owner at **any** level → SKIP.
    - **This company holds shares in *other* smaller companies → D2 → fine**, note it and move on.
    - Registry data can lag a reorg (a group dissolved, a sister company sold) — check the dates.
+   - **The founder's / client's firsthand call overrides this check:** if the user says their founder has already spoken to the company and judged it a fit, that beats the registry proxy — SELECT even if a holdco technically sits above. A real conversation with the decision-maker is better evidence than the register.
 
 ### Step 3 — Apply the rules
 
@@ -151,10 +162,10 @@ Rules for the output:
 
 - **D9 competitor is a clean SKIP** — Go Digital! (go-digital.cz) is a BPO whose menu lists "outbound campaigns" + "leads" (appointment-setting) + "email campaigns". Any company selling outbound/lead-gen/appointment-setting/SDR services is out.
 
-- **The parent-company check (D1) is the single biggest filter and the easiest to get wrong** — it nearly always needs the external registry lookup. A personal holding company counts. An MBO holding s.r.o. counts (this is what flipped NEOXX to SKIP). A company owning its *own* subsidiaries does not.
+- **D1 is about *reachability of the buyer*, not legal structure.** SKIP only when a real parent sits above and owns the decision: an operating company, a branded group, or a PE/VC/investment fund (Synerga → AVANT ENERGY SICAV fund; Controlis → Liftrock group; Senvio → MIBCON Group; Meonzi → "a Trask Company"; Sophia → SUDOP CIT; Shopsys → ABUGO; ANETE → TTC group; Medicalc → Infini One a.s. external majority). **A holding shell owned by the target's own founders / operators is NOT D1** — same reachable decision-maker. UX Fans (→ UXF Ventures s.r.o., the founders' own vehicle) is a SELECT. **This also reverses the earlier NEOXX and Datacon SKIPs** — Aterea s.r.o. (NEOXX's two managers' MBO vehicle) and LHUB Holding ApS (Datacon owner's personal holdco) are founder wrappers, not real parents. Always trace the holdco up one level: founders as individuals → keep; a different company / fund / outside people → skip. It still nearly always needs the external registry lookup. A company owning its *own* subsidiaries is D2 (fine).
 - **"Enterprise-only" was relaxed to "mid-market or larger."** Don't skip a company because its clients are mid-market rather than Fortune-500.
-- **"Too big" is not a thing.** No headcount or funding ceiling.
-- **Free consultation is a real disqualifier (D3)** — "free audit", "free strategy call", "free workshop", "konzultácia zdarma".
+- **"Too big" is not a thing. "Too small" is also not a thing.** No headcount, revenue, or funding ceiling OR floor. A 5-person agency on €250k revenue can be a SELECT if it's reachable and serves mid-ticket clients (Studio 9). Never SKIP because the company "looks too small to afford the retainer" — and never turn "small revenue" into an implied D6. D6 is about *their pricing model* (cheap public pricing / self-serve checkout / micro-only clients), not their size.
+- **D3 is only about the word "free" (session 3).** SKIP only if something is offered explicitly free — free demo / trial / plan / consultation / audit / workshop, freemium, self-serve signup, "no credit card". A plain "Book a demo" / "Request a demo" / "Book a consultation" / contact form that is NOT called free is **fine** — that's just a normal B2B sales entry point, keep it. ("free audit", "free strategy call", "konzultácia zdarma", "bezplatná konzultácia" still fire.)
 - **Prop-trading / own-capital / no-customers businesses are a clean SKIP (D4)** even when rich.
 - **Staffing / body-leasing as the *core* business is a clean SKIP (D5);** a project company that also offers staff augmentation is not.
 - **D8 fires only on a government-ONLY client base.** Government being the majority is fine as long as private enterprises are also genuinely served (corporate/works canteens, private industry, private company refs) — run outbound at the private side. Don't skip off government-heavy case studies alone; check for private clients first. (ANETE: heavy state-hospital + Ministry of Defence use, but also private works canteens + ŽĎAS + KNL Catering → D8 clears; it skipped on D1 instead.)
